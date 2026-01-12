@@ -9,32 +9,41 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import db.DB;
+import db.DbException;
 import db.DbIntegretyException;
 public class Program {
     
     public static void main(String[] args) {
         Connection conn = null;
-        PreparedStatement st = null;
+        Statement st = null;
         
         
         try {
             
         	conn = DB.getConnection();
-        	st  = conn.prepareStatement(
-        			"DELETE FROM department "
-        			+" WHERE "
-        			+"Id = ?"
-        			);
-        	st.setInt(1, 2);
+       
+        	conn.setAutoCommit(false);
         	
+        	st = conn.createStatement();
         	
+        	int rows1 = st.executeUpdate("UPDATE seller SET BaseSalary = 2090 WHERE DepartmentId=1");
+        	//fake error
+        	int x = 1;
+        	if (x < 2) {
+        		throw new SQLException("Fake error");
+        	}
         	
-        	int rowsAffected = st.executeUpdate();
+        	int rows2 = st.executeUpdate("UPDATE seller SET BaseSalary  = 4090 WHERE DepartmentId=4");
         	
-        	System.out.println("Done! Rows Affected: "+ rowsAffected);
-        	
+        	System.out.println("rows1: "+rows1);
+        	System.out.println("rows2: "+rows2);
         } catch (SQLException e) {
-            throw new DbIntegretyException(e.getMessage());
+           try {
+        	   conn.rollback();
+        	   throw new DbException("Transaction rolled back! Caused by: ");
+           }catch(SQLException e1) {
+        	  throw new DbException("Transaction error: "+e1.getMessage());
+           }
         } 
         finally {
             DB.closeStatement(st);
