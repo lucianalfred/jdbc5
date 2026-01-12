@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import db.DB;
-
+import db.DbIntegretyException;
 public class Program {
     
     public static void main(String[] args) {
@@ -21,21 +21,20 @@ public class Program {
             
         	conn = DB.getConnection();
         	st  = conn.prepareStatement(
-        			"UPDATE seller "
-        			+"SET BaseSalary  = BaseSalary + ?"
-        			+ "WHERE "
-        			+ "(DepartmentId = ?)"
+        			"DELETE FROM department "
+        			+" WHERE "
+        			+"Id = ?"
         			);
-        	st.setDouble(1, 400);
-        	st.setInt(2, 4);
+        	st.setInt(1, 2);
+        	
+        	
         	
         	int rowsAffected = st.executeUpdate();
         	
         	System.out.println("Done! Rows Affected: "+ rowsAffected);
         	
         } catch (SQLException e) {
-            System.err.println("SQL Error: " + e.getMessage());
-            e.printStackTrace();
+            throw new DbIntegretyException(e.getMessage());
         } 
         finally {
             DB.closeStatement(st);
