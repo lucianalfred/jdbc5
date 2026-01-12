@@ -26,8 +26,8 @@ public class Program {
         			+ "WHERE "
         			+ "(DepartmentId = ?)"
         			);
-        	st.setDouble(1, 200);
-        	st.setInt(2, 2);
+        	st.setDouble(1, 400);
+        	st.setInt(2, 4);
         	
         	int rowsAffected = st.executeUpdate();
         	
